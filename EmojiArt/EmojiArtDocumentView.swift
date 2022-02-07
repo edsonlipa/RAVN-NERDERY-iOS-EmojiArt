@@ -39,13 +39,12 @@ struct EmojiArtDocumentView: View {
                             .font(.system(size: fontSize(for: emoji)))
                             .scaleEffect(zoomScale)
                             .position(position(for: emoji, in: geometry))
-                            .gesture(oneTapSelection(emoji: emoji))
+                            .gesture(oneTapSelection(emoji: emoji).exclusively(before: longPressGesture(emoji)))
                             .gesture(dragEmojiGesture(emoji: emoji))
 
                     }
                 }
             }
-            
             .clipped()
             .onDrop(of: [.plainText,.url,.image], isTargeted: nil) { providers, location in
                 drop(providers: providers, at: location, in: geometry)
@@ -69,6 +68,8 @@ struct EmojiArtDocumentView: View {
     
     @GestureState private var gestureDragOffset = CGSize.zero
     
+    // MARK: - Drag Emoji
+
     private func dragEmojiGesture(emoji: EmojiArtModel.Emoji ) -> some Gesture {
         DragGesture()
             .updating($gestureDragOffset) { latestValue , gestureDragOffset, _ in
@@ -82,6 +83,16 @@ struct EmojiArtDocumentView: View {
                         document.moveEmoji(emojiSelected, by: dragTraslation)
                     }
                 }
+            }
+    }
+    
+    // MARK: - Delete Emoji
+    
+    private func longPressGesture(_ emoji: EmojiArtModel.Emoji) -> some Gesture {
+        LongPressGesture(minimumDuration: 1)
+            .onEnded { finished in
+                selectedEmojis.contains(emoji) ? selectedEmojis.toggleMembership(of: emoji) : nil
+                document.deleteEmoji(emoji)
             }
     }
     
@@ -156,7 +167,13 @@ struct EmojiArtDocumentView: View {
     private func zoomGesture() -> some Gesture {
         MagnificationGesture()
             .updating($gestureZoomScale) { latestGestureScale, gestureZoomScale, _ in
-                gestureZoomScale = latestGestureScale
+                if selectedEmojis.isEmpty {
+                    gestureZoomScale = latestGestureScale
+                } else {
+                    for emojiSelected in selectedEmojis {
+                        document.scaleEmoji(emojiSelected, by: latestGestureScale / zoomScale)
+                    }
+                }
             }
             .onEnded { gestureScaleAtEnd in
                 if selectedEmojis.isEmpty {

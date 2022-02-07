@@ -10,7 +10,7 @@ import SwiftUI
 
 struct EmojiArtDocumentView: View {
     @ObservedObject var document: EmojiArtDocument
-    @State private var selected = Set<EmojiArtModel.Emoji>()
+    @State private var selectedEmojis = Set<EmojiArtModel.Emoji>()
     
     let defaultEmojiFontSize: CGFloat = 40
     
@@ -35,7 +35,7 @@ struct EmojiArtDocumentView: View {
                 } else {
                     ForEach(document.emojis) { emoji in
                         Text(emoji.text)
-                            .background(selected.contains(emoji) ? Color.yellow : nil)
+                            .background(selectedEmojis.contains(emoji) ? Color.yellow : nil)
                             .font(.system(size: fontSize(for: emoji)))
                             .scaleEffect(zoomScale)
                             .position(position(for: emoji, in: geometry))
@@ -52,7 +52,7 @@ struct EmojiArtDocumentView: View {
             }
             .gesture(panGesture().simultaneously(with: zoomGesture()))
             .onTapGesture{
-                selected.removeAll()
+                selectedEmojis.removeAll()
             }
         }
     }
@@ -62,7 +62,8 @@ struct EmojiArtDocumentView: View {
     private func oneTapSelection(emoji: EmojiArtModel.Emoji ) -> some Gesture {
         TapGesture(count: 1)
             .onEnded {
-                selected.toggleMatching(item: emoji)
+                selectedEmojis.toggleMatching(item: emoji)
+                print(selectedEmojis)
             }
     }
     
@@ -76,8 +77,8 @@ struct EmojiArtDocumentView: View {
             .onEnded{ latestValue in
                 let dragTraslation = latestValue.translation / zoomScale
                 
-                if selected.contains(emoji) {
-                    selected.forEach { emojiSelected in
+                if selectedEmojis.contains(emoji) {
+                    selectedEmojis.forEach { emojiSelected in
                         document.moveEmoji(emojiSelected, by: dragTraslation)
                     }
                 }
@@ -115,7 +116,7 @@ struct EmojiArtDocumentView: View {
     
     private func position(for emoji: EmojiArtModel.Emoji, in geometry: GeometryProxy) -> CGPoint {
         
-        if selected.contains(emoji) {
+        if selectedEmojis.contains(emoji) {
             return convertFromEmojiCoordinates((emoji.x + Int(gestureDragOffset.width), emoji.y + Int(gestureDragOffset.height)), in: geometry)
         } else {
             return convertFromEmojiCoordinates((emoji.x, emoji.y), in: geometry)
@@ -158,7 +159,13 @@ struct EmojiArtDocumentView: View {
                 gestureZoomScale = latestGestureScale
             }
             .onEnded { gestureScaleAtEnd in
-                steadyStateZoomScale *= gestureScaleAtEnd
+                if selectedEmojis.isEmpty {
+                    steadyStateZoomScale *= gestureScaleAtEnd
+                } else {
+                    for emojiSelected in selectedEmojis {
+                        document.scaleEmoji(emojiSelected, by: gestureScaleAtEnd)
+                    }
+                }
             }
     }
     

@@ -10,10 +10,7 @@ import SwiftUI
 
 struct EmojiArtDocumentView: View {
     @ObservedObject var document: EmojiArtDocument
-    @State private var selectedEmojis = Set<EmojiArtModel.Emoji>()
-    
-    let defaultEmojiFontSize: CGFloat = 40
-    
+
     var body: some View {
         VStack(spacing: 0) {
             documentBody
@@ -56,6 +53,31 @@ struct EmojiArtDocumentView: View {
         }
     }
     
+    // MARK: - Palette
+    
+    var palette: some View {
+        ScrollingEmojisView(emojis: testEmojis)
+            .font(.system(size: defaultEmojiFontSize))
+    }
+    
+    let testEmojis = "😀😷🦠💉👻👀🐶🌲🌎🌞🔥🍎⚽️🚗🚓🚲🛩🚁🚀🛸🏠⌚️🎁🗝🔐❤️⛔️❌❓✅⚠️🎶➕➖🏳️"
+    
+    @State private var selectedEmojis = Set<EmojiArtModel.Emoji>()
+    @GestureState private var gestureDragOffset = CGSize.zero
+    @State private var steadyStateZoomScale: CGFloat = 1
+    @GestureState private var gestureZoomScale: CGFloat = 1
+    @State private var steadyStatePanOffset: CGSize = CGSize.zero
+    @GestureState private var gesturePanOffset: CGSize = CGSize.zero
+    
+    private var panOffset: CGSize {
+        (steadyStatePanOffset + gesturePanOffset) * zoomScale
+    }
+    private var zoomScale: CGFloat {
+        steadyStateZoomScale * gestureZoomScale
+    }
+    
+    private let defaultEmojiFontSize: CGFloat = 40
+    
     // MARK: - Selection
     
     private func oneTapSelection(emoji: EmojiArtModel.Emoji ) -> some Gesture {
@@ -66,7 +88,6 @@ struct EmojiArtDocumentView: View {
             }
     }
     
-    @GestureState private var gestureDragOffset = CGSize.zero
     
     // MARK: - Drag Emoji
 
@@ -157,13 +178,7 @@ struct EmojiArtDocumentView: View {
     
     // MARK: - Zooming
     
-    @State private var steadyStateZoomScale: CGFloat = 1
-    @GestureState private var gestureZoomScale: CGFloat = 1
-    
-    private var zoomScale: CGFloat {
-        steadyStateZoomScale * gestureZoomScale
-    }
-    
+
     private func zoomGesture() -> some Gesture {
         MagnificationGesture()
             .updating($gestureZoomScale) { latestGestureScale, gestureZoomScale, _ in
@@ -206,12 +221,7 @@ struct EmojiArtDocumentView: View {
     
     // MARK: - Panning
     
-    @State private var steadyStatePanOffset: CGSize = CGSize.zero
-    @GestureState private var gesturePanOffset: CGSize = CGSize.zero
-    
-    private var panOffset: CGSize {
-        (steadyStatePanOffset + gesturePanOffset) * zoomScale
-    }
+
     
     private func panGesture() -> some Gesture {
         DragGesture()
@@ -223,14 +233,6 @@ struct EmojiArtDocumentView: View {
             }
     }
 
-    // MARK: - Palette
-    
-    var palette: some View {
-        ScrollingEmojisView(emojis: testEmojis)
-            .font(.system(size: defaultEmojiFontSize))
-    }
-    
-    let testEmojis = "😀😷🦠💉👻👀🐶🌲🌎🌞🔥🍎⚽️🚗🚓🚲🛩🚁🚀🛸🏠⌚️🎁🗝🔐❤️⛔️❌❓✅⚠️🎶➕➖🏳️"
 }
 
 struct ScrollingEmojisView: View {

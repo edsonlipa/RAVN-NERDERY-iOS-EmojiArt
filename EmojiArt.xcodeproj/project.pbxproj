@@ -43,6 +43,40 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		97CCA21527B4CC390088CDAD /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				EC030742263771AD001E9F47 /* EmojiArtDocumentView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		97CCA21627B4CC500088CDAD /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				EC03074F263771AD001E9F47 /* EmojiArtModel.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		97CCA21727B4CC690088CDAD /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				EC030753263772D8001E9F47 /* EmojiArtDocument.swift */,
+				EC030751263771D0001E9F47 /* EmojiArtModel.Background.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		97CCA21827B4CC930088CDAD /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				EC030756263774A2001E9F47 /* UtilityViews.swift */,
+				EC030755263774A2001E9F47 /* UtilityExtensions.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
 		EC030734263771AD001E9F47 = {
 			isa = PBXGroup;
 			children = (
@@ -62,13 +96,11 @@
 		EC03073F263771AD001E9F47 /* EmojiArt */ = {
 			isa = PBXGroup;
 			children = (
-				EC030742263771AD001E9F47 /* EmojiArtDocumentView.swift */,
-				EC030753263772D8001E9F47 /* EmojiArtDocument.swift */,
-				EC03074F263771AD001E9F47 /* EmojiArtModel.swift */,
-				EC030751263771D0001E9F47 /* EmojiArtModel.Background.swift */,
 				EC030740263771AD001E9F47 /* EmojiArtApp.swift */,
-				EC030755263774A2001E9F47 /* UtilityExtensions.swift */,
-				EC030756263774A2001E9F47 /* UtilityViews.swift */,
+				97CCA21527B4CC390088CDAD /* Views */,
+				97CCA21627B4CC500088CDAD /* Models */,
+				97CCA21727B4CC690088CDAD /* ViewModels */,
+				97CCA21827B4CC930088CDAD /* Utilities */,
 				EC030744263771AD001E9F47 /* Assets.xcassets */,
 				EC030749263771AD001E9F47 /* Info.plist */,
 				EC030746263771AD001E9F47 /* Preview Content */,

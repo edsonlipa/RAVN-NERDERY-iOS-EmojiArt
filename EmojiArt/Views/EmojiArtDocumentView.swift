@@ -10,15 +10,14 @@ import SwiftUI
 
 struct EmojiArtDocumentView: View {
     @ObservedObject var document: EmojiArtDocument
+    @State private var selectedEmojis = Set<EmojiArtModel.Emoji>()
+    @GestureState private var gestureDragOffset = CGSize.zero
+    @State private var steadyStateZoomScale: CGFloat = 1
+    @GestureState private var gestureZoomScale: CGFloat = 1
+    @State private var steadyStatePanOffset: CGSize = CGSize.zero
+    @GestureState private var gesturePanOffset: CGSize = CGSize.zero
 
-    var body: some View {
-        VStack(spacing: 0) {
-            documentBody
-            palette
-        }
-    }
-    
-    var documentBody: some View {
+    private var documentBody: some View {
         GeometryReader { geometry in
             ZStack {
                 Color.white.overlay(
@@ -30,7 +29,7 @@ struct EmojiArtDocumentView: View {
                 if document.backgroundImageFetchStatus == .fetching {
                     ProgressView().scaleEffect(2)
                 } else {
-                    ForEach(document.emojis) { emoji in
+                    ForEach(document.emojiArt.emojis) { emoji in
                         Text(emoji.text)
                             .background(selectedEmojis.contains(emoji) ? Color.yellow : nil)
                             .font(.system(size: fontSize(for: emoji)))
@@ -53,21 +52,27 @@ struct EmojiArtDocumentView: View {
         }
     }
     
-    // MARK: - Palette
-    
-    var palette: some View {
+    private var palette: some View {
         ScrollingEmojisView(emojis: testEmojis)
             .font(.system(size: defaultEmojiFontSize))
     }
     
-    let testEmojis = "😀😷🦠💉👻👀🐶🌲🌎🌞🔥🍎⚽️🚗🚓🚲🛩🚁🚀🛸🏠⌚️🎁🗝🔐❤️⛔️❌❓✅⚠️🎶➕➖🏳️"
+    var body: some View {
+        VStack(spacing: 0) {
+            documentBody
+            palette
+        }
+    }
     
-    @State private var selectedEmojis = Set<EmojiArtModel.Emoji>()
-    @GestureState private var gestureDragOffset = CGSize.zero
-    @State private var steadyStateZoomScale: CGFloat = 1
-    @GestureState private var gestureZoomScale: CGFloat = 1
-    @State private var steadyStatePanOffset: CGSize = CGSize.zero
-    @GestureState private var gesturePanOffset: CGSize = CGSize.zero
+
+    // MARK: - Palette
+    
+
+    
+    private let testEmojis = "😀😷🦠💉👻👀🐶🌲🌎🌞🔥🍎⚽️🚗🚓🚲🛩🚁🚀🛸🏠⌚️🎁🗝🔐❤️⛔️❌❓✅⚠️🎶➕➖🏳️"
+    private let defaultEmojiFontSize: CGFloat = 40
+
+
     
     private var panOffset: CGSize {
         (steadyStatePanOffset + gesturePanOffset) * zoomScale
@@ -76,7 +81,6 @@ struct EmojiArtDocumentView: View {
         steadyStateZoomScale * gestureZoomScale
     }
     
-    private let defaultEmojiFontSize: CGFloat = 40
     
     // MARK: - Selection
     

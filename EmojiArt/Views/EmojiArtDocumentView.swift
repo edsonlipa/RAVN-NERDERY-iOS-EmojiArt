@@ -16,7 +16,16 @@ struct EmojiArtDocumentView: View {
     @GestureState private var gestureZoomScale: CGFloat = 1
     @State private var steadyStatePanOffset: CGSize = CGSize.zero
     @GestureState private var gesturePanOffset: CGSize = CGSize.zero
-
+    
+    private let testEmojis = "😀😷🦠💉👻👀🐶🌲🌎🌞🔥🍎⚽️🚗🚓🚲🛩🚁🚀🛸🏠⌚️🎁🗝🔐❤️⛔️❌❓✅⚠️🎶➕➖🏳️"
+    private let defaultEmojiFontSize: CGFloat = 40
+    
+    private var panOffset: CGSize {
+        (steadyStatePanOffset + gesturePanOffset) * zoomScale
+    }
+    private var zoomScale: CGFloat {
+        steadyStateZoomScale * gestureZoomScale
+    }
     private var documentBody: some View {
         GeometryReader { geometry in
             ZStack {
@@ -64,23 +73,6 @@ struct EmojiArtDocumentView: View {
         }
     }
     
-
-    // MARK: - Palette
-    
-
-    
-    private let testEmojis = "😀😷🦠💉👻👀🐶🌲🌎🌞🔥🍎⚽️🚗🚓🚲🛩🚁🚀🛸🏠⌚️🎁🗝🔐❤️⛔️❌❓✅⚠️🎶➕➖🏳️"
-    private let defaultEmojiFontSize: CGFloat = 40
-
-
-    
-    private var panOffset: CGSize {
-        (steadyStatePanOffset + gesturePanOffset) * zoomScale
-    }
-    private var zoomScale: CGFloat {
-        steadyStateZoomScale * gestureZoomScale
-    }
-    
     
     // MARK: - Selection
     
@@ -91,7 +83,6 @@ struct EmojiArtDocumentView: View {
                 print(selectedEmojis)
             }
     }
-    
     
     // MARK: - Drag Emoji
 
